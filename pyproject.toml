@@ -1,0 +1,17 @@
+[project]
+name = "task2-dl"
+version = "0.1.0"
+description = "Deep Learning Task 2"
+authors = [
+    {name = "Your Name", email = "your.email@example.com"}
+]
+readme = "README.md"
+requires-python = "==3.10.18"
+dependencies = [
+    "ollama (>=0.6.1,<0.7.0)",
+    "pydantic>=2.13.3",
+]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"

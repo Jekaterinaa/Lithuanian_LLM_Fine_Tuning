@@ -1,0 +1,7 @@
+main.py
+pyproject.toml
+task2_dl.egg-info/PKG-INFO
+task2_dl.egg-info/SOURCES.txt
+task2_dl.egg-info/dependency_links.txt
+task2_dl.egg-info/requires.txt
+task2_dl.egg-info/top_level.txt

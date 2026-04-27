@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: task2-dl
+Version: 0.1.0
+Summary: Deep Learning Task 2
+Author-email: Your Name <your.email@example.com>
+Requires-Python: ==3.10.18
+Description-Content-Type: text/markdown
+Requires-Dist: ollama<0.7.0,>=0.6.1
+Requires-Dist: pydantic>=2.13.3
