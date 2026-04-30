@@ -157,7 +157,7 @@ if __name__ == "__main__":
     print(f"\nGeneration complete. Total examples: {len(examples)}")
     random.shuffle(examples)
 
-    with open("dataset/fine_tuning_dataset.json", "w", encoding="utf-8") as f:
+    with open("dataset/fine_tuning_dataset_with_32b.json", "w", encoding="utf-8") as f:
         json.dump(
             [ex.model_dump() for ex in examples],
             f,
