@@ -44,9 +44,17 @@ loaded_tokenizer.padding_side = "right"
 print("Model and tokenizer loaded successfully!")
 print("Note: The model is loaded with 4-bit quantization and PEFT adapters applied.")
 
+
 def generate(prompt, max_new_tokens=100):
-    inputs = loaded_tokenizer(prompt, return_tensors="pt").to(loaded_model.device)
-    
+    messages = [
+        {"role": "user", "content": prompt}
+    ]
+    formatted_prompt = loaded_tokenizer.apply_chat_template(
+        messages, tokenize=False, add_generation_prompt=True
+    )
+
+    inputs = loaded_tokenizer(formatted_prompt, return_tensors="pt").to(loaded_model.device)
+
     with torch.no_grad():
         outputs = loaded_model.generate(
             **inputs,
@@ -55,8 +63,10 @@ def generate(prompt, max_new_tokens=100):
             temperature=0.7,
             top_p=0.9
         )
-    
-    return loaded_tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+    new_tokens = outputs[0][inputs["input_ids"].shape[1]:]
+    return loaded_tokenizer.decode(new_tokens, skip_special_tokens=True)
+
 
 prompt = "kas yra gilusis mokymasis ir kaip jis veikia?"
 print(generate(prompt))
