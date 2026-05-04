@@ -1,14 +1,14 @@
-# Load the fine-tuned model
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig, pipeline
 from peft import PeftModel
 import torch
 
 
-fine_tuned_model_path = "fine_tuned_tinyllama_model"
-# Define the base model name (same as used for training)
-model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+# fine_tuned_model_path = "fine_tuned_tinyllama_model"
+fine_tuned_model_path = "fine_tuned_gemma4_model"
+# model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+model_name = "google/gemma-2b"
 
-# Define the quantization config (same as used for training)
+# quantization config (same as used for training)
 quantization_config = BitsAndBytesConfig(
     load_in_4bit=True,
     bnb_4bit_quant_type="nf4",
@@ -25,7 +25,6 @@ base_model = AutoModelForCausalLM.from_pretrained(
 )
 
 # 2. Load the PEFT adapter weights and apply them
-# Assuming output_dir contains the adapter weights (adapter_model.safetensors, adapter_config.json)
 loaded_model = PeftModel.from_pretrained(
     base_model,
     fine_tuned_model_path,

@@ -1,6 +1,3 @@
-import os
-os.environ["PYTHONUTF8"] = "1"
-
 import torch
 from datasets import load_dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig, TrainingArguments
@@ -13,10 +10,8 @@ print("GPU:", torch.cuda.get_device_name(0) if torch.cuda.is_available() else "N
 print("bf16 support:", torch.cuda.is_bf16_supported() if torch.cuda.is_available() else "N/A")
 
 # --- Model ---
-# needs verification now
-# model_name = "meta-llama/Meta-Llama-3.1-8B-Instruct"
-# model_name = "unsloth/Llama-3.2-3B-Instruct"
 model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+#model_name = "google/gemma-2b"
 
 quantization_config = BitsAndBytesConfig(
     load_in_4bit=True,
@@ -31,7 +26,7 @@ model = AutoModelForCausalLM.from_pretrained(
     device_map="auto",
     dtype=torch.bfloat16,
 )
-model.config.use_cache = False  # required for gradient checkpointing
+model.config.use_cache = False
 
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 tokenizer.pad_token = tokenizer.eos_token
@@ -40,11 +35,12 @@ tokenizer.padding_side = "right"
 # --- Dataset ---
 # Adjust path/format to your dataset
 dataset = load_dataset("json", data_files="dataset/fine_tuning_dataset_with_32b.json", split="train")
+# dataset = load_dataset("json", data_files="fine_tuning_dataset_with_32b_gemma.json", split="train")
 
 # --- LoRA Config ---
 peft_config = LoraConfig(
-    r=8,              # rank dimension (4-32 typical; 8 is a solid default)
-    lora_alpha=16,     # scaling factor (commonly 2x r)
+    r=8,
+    lora_alpha=16,
     lora_dropout=0.05,
     bias="none",
     target_modules="all-linear",
@@ -53,6 +49,7 @@ peft_config = LoraConfig(
 
 # --- Training Arguments ---
 output_dir = "./llama3-finetuned"
+# output_dir = "./gemma4-finetuned"
 max_seq_length = 1024
 
 training_args = TrainingArguments(
@@ -68,7 +65,7 @@ training_args = TrainingArguments(
     save_strategy="epoch",
     bf16=False,
     fp16=False,
-    use_cpu=True,
+    use_cpu=False,
     gradient_checkpointing=True,
     gradient_checkpointing_kwargs={"use_reentrant": False},
     report_to="none",
