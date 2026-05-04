@@ -10,7 +10,7 @@ from prompts.user_prompts import user_prompt_grammar, user_prompt_qa, user_promp
 MODEL = "qwen2.5:32b"
 BATCH_SIZE = 5
 
-# Less examples to generate
+# examples to generate
 GRAMMAR_TOTAL = 250
 QA_TOTAL = 500
 MAIRONIS_TOTAL = 250
@@ -85,7 +85,7 @@ if __name__ == "__main__":
     examples = []
 
 
-    # Grammar: 2500 total (5 error types x 500 each with batches of 5)
+    # Grammar
     batches_per_error_type = GRAMMAR_TOTAL // (len(ERROR_TYPES) * BATCH_SIZE)
 
     for error_type in ERROR_TYPES:
@@ -108,7 +108,7 @@ if __name__ == "__main__":
                 print(f"  Batch {i + 1}/{batches_per_error_type} — ERROR: {e}")
 
 
-    # --- QA: 5000 total (20 topics × 250 each × batches of 5 = 50 batches per topic) ---
+    # QA
     batches_per_topic = QA_TOTAL // (len(TOPICS) * BATCH_SIZE)  # 50
 
     for topic in TOPICS:
@@ -131,7 +131,7 @@ if __name__ == "__main__":
                 print(f"  Batch {i + 1}/{batches_per_topic} — ERROR: {e}")
 
 
-    # --- Maironis: 2500 total (batches of 5 = 500 batches) ---
+    # Poetic style
     maironis_batches = MAIRONIS_TOTAL // BATCH_SIZE  # 500
 
     print(f"\n[Maironis] Generating {maironis_batches} batches")
@@ -166,67 +166,3 @@ if __name__ == "__main__":
         )
 
     print(f"Saved {len(examples)} examples to dataset/fine_tuning_dataset_with_32b.json")
-
-    # # Grammar generation
-    # system_msg = Message(role="system", content=system_prompt_grammar)
-    # user_msg = Message(role="user", content=user_prompt_grammar.format(n=2, error_type="case"))
-    #
-    # messages = [system_msg.model_dump(), user_msg.model_dump()]
-    #
-    # response = generate_example(messages, model, response_format=GrammarResponse)
-    # grammar_data = GrammarResponse.model_validate_json(response.message.content)
-    #
-    # # Convert to fine-tuning format
-    # fine_tuning_examples = [
-    #     to_fine_tuning(query=item.incorrect, response=item.correct)
-    #     for item in grammar_data.examples
-    # ]
-    # examples.extend(fine_tuning_examples)
-    #
-    #
-    # # QA generation
-    # system_msg = Message(role="system", content=system_prompt_qa)
-    # user_msg = Message(role="user", content=user_prompt_qa.format(n=2, topic="Artificial Intelligence"))
-    #
-    # messages = [system_msg.model_dump(), user_msg.model_dump()]
-    #
-    # response = generate_example(messages, model, response_format=QAResponse)
-    # qa_data = QAResponse.model_validate_json(response.message.content)
-    #
-    # # Convert to fine-tuning format
-    # fine_tuning_examples = [
-    #     to_fine_tuning(query=item.question, response=item.answer)
-    #     for item in qa_data.examples
-    # ]
-    # examples.extend(fine_tuning_examples)
-    #
-    #
-    # # Maironis generation
-    # system_msg = Message(role="system", content=system_prompt_maironis)
-    # user_msg = Message(role="user", content=user_prompt_maironis.format(n=2))
-    #
-    # messages = [system_msg.model_dump(), user_msg.model_dump()]
-    #
-    # response = generate_example(messages, model, response_format=MaironisResponse)
-    # maironis_data = MaironisResponse.model_validate_json(response.message.content)
-    #
-    # # Convert to fine-tuning format
-    # fine_tuning_examples = [
-    #     to_fine_tuning(query=item.input, response=item.output)
-    #     for item in maironis_data.examples
-    # ]
-    # examples.extend(fine_tuning_examples)
-    #
-    # # Shuffle dataset
-    # random.shuffle(examples)
-    #
-    # # Write to JSON file
-    # with open("dataset/fine_tuning_dataset.json", "w", encoding="utf-8") as f:
-    #     json.dump(
-    #         [ex.model_dump() for ex in examples],
-    #         f,
-    #         ensure_ascii=False,
-    #         indent=2
-    #     )
-    #
-    # print(f"\nSaved {len(examples)} examples to fine_tuning_dataset.json")
